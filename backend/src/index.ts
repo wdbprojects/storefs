@@ -29,7 +29,7 @@ app.use(
 app.get("/", (req, res) => {
   res.json({
     message:
-      "Welcome to StoreFS API = Powered by PostgreSQL, Drizzle ORM & BetterAuth",
+      "Welcome to StoreFS API - Powered by PostgreSQL, Drizzle ORM & BetterAuth",
     endpoints: {
       users: "/api/users",
       products: "/api/products",
