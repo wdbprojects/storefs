@@ -7,13 +7,6 @@ import cors from "cors";
 
 /* BETTER AUTH */
 app.all("/api/auth/*splat", toNodeHandler(auth));
-/* GET SESSION */
-app.get("/api/me", async (req, res) => {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-  return res.json(session);
-});
 
 /* MIDDLEWARES */
 express.json();
@@ -25,6 +18,40 @@ app.use(
     credentials: true,
   }),
 );
+
+/* BETTER AUTH GET SESSION */
+app.get("/api/me", async (req, res) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+  return res.json(session);
+});
+// SIGN UP
+app.post("/api/auth/sign-up/email", async (req, res) => {
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+      },
+    });
+    return res.status(200).json({ success: true, user: result });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(400)
+      .json({ success: false, message: "Internal Server Error!!" });
+  }
+});
+
+/* BETTER AUTH SIGN UP */
+app.get("/api/me", async (req, res) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+  return res.json(session);
+});
 
 app.get("/", (req, res) => {
   res.json({
