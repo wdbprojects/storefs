@@ -4,6 +4,9 @@ import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { ENV } from "./config/env";
 import { auth } from "./lib/auth";
 import cors from "cors";
+import { userRoutes } from "./routes/user-routes";
+import { productRoutes } from "./routes/product-routes";
+import { commentRoutes } from "./routes/comment-routes";
 
 /* BETTER AUTH */
 app.all("/api/auth/*splat", toNodeHandler(auth));
@@ -58,13 +61,17 @@ app.get("/", (req, res) => {
     message:
       "Welcome to StoreFS API - Powered by PostgreSQL, Drizzle ORM & BetterAuth",
     endpoints: {
-      users: "/api/users",
-      products: "/api/products",
-      comments: "/api/comments",
+      users: "/api/v1/users",
+      products: "/api/v1/products",
+      comments: "/api/v1/comments",
     },
   });
 });
 
-const server = app.listen(ENV.PORT, () => {
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/comments", commentRoutes);
+
+app.listen(ENV.PORT, () => {
   console.log(`Server is running on port ${ENV.PORT}`);
 });
