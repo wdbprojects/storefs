@@ -18,8 +18,8 @@ export const comment = pgTable("comments", {
 
 /* RELATIONS */
 export const commentRelations = relations(comment, ({ one }) => ({
-  users: one(user, { fields: [comment.userId], references: [user.id] }),
-  products: one(product, {
+  user: one(user, { fields: [comment.userId], references: [user.id] }),
+  product: one(product, {
     fields: [comment.userId],
     references: [product.id],
   }),
