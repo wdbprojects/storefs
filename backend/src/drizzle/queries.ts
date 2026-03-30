@@ -19,6 +19,8 @@ export const getUserById = async (id: string) => {
   return foundUser;
 };
 export const updateUser = async (id: string, data: Partial<NewUserType>) => {
+  const existingUser = await getUserById(id);
+  if (!existingUser) throw new Error(`User with id ${id} not found`);
   const [updatedUser] = await db
     .update(user)
     .set(data)
@@ -27,11 +29,15 @@ export const updateUser = async (id: string, data: Partial<NewUserType>) => {
   return updatedUser;
 };
 export const upsertUser = async (data: NewUserType) => {
-  const currentUser = await getUserById(data.id);
-  if (currentUser) {
-    return updateUser(data.id, data);
-  }
-  return createUser(data);
+  const [upsertedUser] = await db
+    .insert(user)
+    .values(data)
+    .onConflictDoUpdate({
+      target: user.id,
+      set: data,
+    })
+    .returning();
+  return upsertedUser;
 };
 
 /* PRODUCT QUERIES */
@@ -71,6 +77,8 @@ export const updateProduct = async (
   id: string,
   data: Partial<NewProductType>,
 ) => {
+  const existingProduct = await getProductById(id);
+  if (!existingProduct) throw new Error(`Product with id ${id} not found`);
   const [updatedProduct] = await db
     .update(product)
     .set(data)
@@ -79,6 +87,8 @@ export const updateProduct = async (
   return updatedProduct;
 };
 export const deleteProduct = async (id: string) => {
+  const existingProduct = await getProductById(id);
+  if (!existingProduct) throw new Error(`Product with id ${id} not found`);
   const deletedProduct = await db
     .delete(product)
     .where(eq(product.id, id))
